@@ -1,5 +1,12 @@
 // Tiny stack VM: faithful port of the ISA reference (generator/subject/vm.mjs).
 // Runs every /input/<id>/{program,input}.bin, writes /output/<id>/{stdout.bin,exit.txt}.
+// Trap codes: 2 underflow, 3 overflow, 4 div-by-zero, 5 bad opcode, 6 bad memory,
+// 7 call depth, 8 empty return stack, 9 bad pc, 10 step limit, 11 output limit.
+// Checked in the reference order: step limit, pc, opcode, truncated immediate,
+// stack bounds, then the effect's own trap. Deterministic: no clock, env or
+// randomness is read, so two runs write byte-identical outputs.
+// Note: opcode 0x1f has no meaning in the ISA, so the binary-op range 0x10-0x22
+// excludes it (it traps as a bad opcode like any other unknown byte).
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 const I = process.env.MAKEFUN_INPUT_DIR ?? '/input';
